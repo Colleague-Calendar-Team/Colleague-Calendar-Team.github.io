@@ -6,14 +6,14 @@ info:
   title: "Calendar API"
 
 tags:
-- name: "notify"
+- name: "notification-service"
   description: "send notifications"
   externalDocs:
     description: "Find out more"
     url: "http://swagger.io"
 
-- name: "event"
-  description: "work with calendar events data"
+- name: "event-processing"
+  description: "work with calendar user's events data"
   
 - name: "user"
   description: "work with user data"
@@ -22,48 +22,54 @@ tags:
 paths:
 
 
-  /notify/telegram/{chatID}:
+  /notification-service/telegram/send:
 
     get:
       tags: 
-      - "notify"
+      - "notification-service"
      
       description: Sends event notification to telegram chat
 
       parameters:
+      
+        - name: api-key
+          
+          in: header
+          
+          type: string
+          
+          required: true
+          
+          description: key to use handle
 
         - name: chatID
 
-          in: path
+          in: header
 
-          type: integer
+          type: string
 
           required: true
 
           description: id of telegram chat where to send message.
         
-        - name: notification text
+        - name: event data
           
           in: body
           
           schema: 
             
-            type: string
+            $ref: "#/definitions/Event" 
           
           required: true
           
-          description: text of notification telegram message
+          description: data to form notification text
           
 
       responses:
 
         200:
 
-          description: Returns chat where message has been sent.
-
-          schema:
-
-            type: integer
+          description: notification sent successfully
 
         400:
 
@@ -77,24 +83,23 @@ paths:
         
           description: Error reading request body
  
-
           
-  /confirm/telegram/{chatID}:
+  /notification-service/telegram/confirm:
 
     get:
       tags: 
-      - "notify"
+      - "notification-service"
 
       description: Returns a greeting to the user!
-
+      
 
       parameters:
 
         - name: chatID
 
-          in: path
+          in: header
 
-          type: integer
+          type: string
 
           required: true
 
@@ -122,15 +127,143 @@ paths:
           schema:
 
             type: integer
+            
+      deprecated: true
 
- 
-# ----------------------------------EVENT--------------------------------------------------------------------------
+
+  /notification-service/email/send:
+
+    get:
+      tags: 
+      - "notification-service"
+     
+      description: Sends event notification to email address
+
+      parameters:
+      
+        - name: api-key
+          
+          in: header
+          
+          type: string
+          
+          required: true
+          
+          description: key to use handle
+
+        - name: email
+
+          in: header
+
+          type: string
+
+          required: true
+
+          description: email adress where to send message.
+        
+        - name: event data
+          
+          in: body
+          
+          schema: 
+            
+            $ref: "#/definitions/Event" 
+          
+          required: true
+          
+          description: data to form notification text
+      
+      
+      responses:
+
+        200:
+
+          description: notification sent successfully
+          
+        400:
+
+          description: Invalid characters in "email" were provided.
+        
+        502:
+          
+          description: Couldn't get answer from email service
+        
+        500:
+        
+          description: Error reading request body
+
+
+  /notification-service/sms/send:
+
+    get:
+      tags: 
+      - "notification-service"
+     
+      description: Sends event notification to sms
+
+      parameters:
+      
+        - name: api-key
+          
+          in: header
+          
+          type: string
+          
+          required: true
+          
+          description: key to use handle
+
+        - name: phone-number
+
+          in: header
+
+          type: string
+
+          required: true
+
+          description: phone number where to send sms message
+        
+        - name: event data
+          
+          in: body
+          
+          schema: 
+            
+            $ref: "#/definitions/Event" 
+          
+          required: true
+          
+          description: data to form notification text
+          
+
+      responses:
+
+        200:
+
+          description: notification sent successfully
+
+        400:
+
+          description: Invalid characters in "chatID" were provided.
+        
+        502:
+          
+          description: Couldn't get answer from sms service api
+        
+        500:
+        
+          description: Error reading request body
+
+# ---------------------------------------------------------------------------------------
+# ----------------------------------EVENT------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
   
-  /event/add:
+  /event-processing/event/add:
 
     post:
       tags: 
-      - "event"
+      - "event-processing"
 
       description: Add event
 
@@ -172,22 +305,68 @@ paths:
         
           description: Error reading request body
           
+          
+  /event-processing/event/update:
+
+    patch:
+      tags: 
+      - "event-processing"
+
+      description: Update event information
+
+
+      parameters:
+
+        - name: event data
+          
+          in: body
+          
+          schema: 
+            
+            $ref: "#/definitions/Event" 
+          
+          required: true
+          
+          description:  event data for update
+          
+
+      responses:
+
+        200:
+
+          description: Returns chat where message has been sent.
+
+          schema:
+
+            type: integer
+
+        400:
+
+          description: Invalid characters in "chatID" were provided.
+        
+        502:
+          
+          description: Couldn't get answer from telegram API
+        
+        500:
+        
+          description: Error reading request body
 
   
-  /event/delete/{eventID}:
+  /event-processing/event/delete:
 
     delete:
       tags: 
-      - "event"
+      - "event-processing"
 
       description: Delete event
 
 
       parameters:
 
-        - name: eventID
+        - name: event_title
 
-          in: path
+          in: header
 
           type: integer
 
@@ -195,17 +374,15 @@ paths:
 
           description: id of telegram chat where to send message.
         
-        - name: notification text
+        - name: token
           
-          in: body
+          in: header
           
-          schema: 
-            
-            type: string
+          type: string
           
           required: true
           
-          description: text of notification telegram message
+          description: user's token
           
 
       responses:
@@ -214,37 +391,34 @@ paths:
 
           description: Returns chat where message has been sent.
 
-          schema:
-
-            type: integer
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid token
         
         502:
           
-          description: Couldn't get answer from telegram API
+          description: Couldn't get answer from database
         
         500:
         
-          description: Error reading request body
+          description: Error reading request headers
           
 
-  /event/getAll/{userID}:
+  /event-processing/event/all:
 
     get:
       tags: 
-      - "event"
+      - "event-processing"
 
-      description: Get all of user
+      description: Get all events of user
 
 
       parameters:
 
-        - name: userID
+        - name: userName
 
-          in: path
+          in: header
 
           type: integer
 
@@ -287,21 +461,20 @@ paths:
         
           description: Error reading request body
           
-       
-       
-#------------------------------USER DATA---------------------------------------------------       
-  /user/getLoad/{userID}:
+      
+
+  /event-processing/user/workload/{userName}:
 
     get:
       tags: 
-      - "user"
+      - "event-processing"
 
       description: Get interval of free and occupied user time
 
 
       parameters:
 
-        - name: userID
+        - name: userName
 
           in: path
 
@@ -311,24 +484,23 @@ paths:
 
           description: id of user
         
-        - name: notification text
+        - name: date
           
-          in: body
+          in: header
           
-          schema: 
-            
-            type: string
+          
+          type: integer
           
           required: true
           
-          description: text of notification telegram message
-          
+          description: date of users load
+    
 
       responses:
 
         200:
 
-          description: Returns chat where message has been sent.
+          description: Returns intervals of occupied time.
 
           schema:
 
@@ -345,6 +517,11 @@ paths:
         500:
         
           description: Error reading request body        
+
+
+#------------------------------------------------------------------------------------------
+#------------------------------USER DATA---------------------------------------------------
+#------------------------------------------------------------------------------------------
 
 
   /user/register:
@@ -359,13 +536,13 @@ paths:
       parameters:
 
         
-        - name: notification text
+        - name: user data
           
           in: body
           
-          schema: 
-            
-            type: string
+          schema:
+            $ref: "#/definitions/User" 
+              
           
           required: true
           
@@ -376,19 +553,16 @@ paths:
 
         200:
 
-          description: Returns chat where message has been sent.
+          description: User registered
 
-          schema:
-
-            type: integer
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid user data provided for registration
         
         502:
           
-          description: Couldn't get answer from telegram API
+          description: Couldn't get answer from database
         
         500:
         
@@ -396,7 +570,7 @@ paths:
 
 
 
-  /user/authenticationToken:
+  /user/authentication-token:
 
     get:
       tags: 
@@ -443,38 +617,33 @@ paths:
         
           description: Error reading request body
           
-
-# ------------------Models--------------------------------------------------
+          
+#--------------------------------------------------------------------------
+# ------------------Models-------------------------------------------------
+#--------------------------------------------------------------------------
 
 definitions:
 
   User:
     type: "object"
     properties:
-      userID:
-        type: "integer"
-        format: "int64"
-      passwordHash:
+      password:
         type: "string"
       email:
         type: "string"
       phoneNumber:
         type: "string"
       telegramID:
-        type: "integer"
+        type: "string"
       name:
         type: "string"
       surname:
         type: "string"
-      avatar:
-        type: "string"
-  
+ 
+
   Event:
     type: "object"
     properties:
-      eventID:
-        type: "integer"
-        format: "int64"
       beginTime:
         type: "string"
         format: "datetime"
@@ -489,6 +658,9 @@ definitions:
         format: "link"
       isRepeating:
         type: "boolean"
+      title:
+        type: "string"
+        
         
   EventParticipant:
     type: "object"
@@ -512,3 +684,16 @@ definitions:
         type: "boolean"
       notificationInSMS:
         type: "boolean"
+
+  UserWorkload:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        beginTime:
+          type: "string"
+          format: "time"
+        endTime:
+          type: "string"
+          format: "time"
+        
