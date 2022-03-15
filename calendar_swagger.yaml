@@ -73,7 +73,7 @@ paths:
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
@@ -182,7 +182,7 @@ paths:
           
         400:
 
-          description: Invalid characters in "email" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
@@ -244,7 +244,7 @@ paths:
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
@@ -270,17 +270,17 @@ paths:
 
       parameters:
 
-        - name: notification text
+        - name: event data
           
           in: body
           
           schema: 
             
-            type: string
+            $ref: "#/definitions/Event" 
           
           required: true
           
-          description: text of notification telegram message
+          description:  event data for creation
           
 
       responses:
@@ -295,7 +295,7 @@ paths:
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
@@ -306,6 +306,51 @@ paths:
           description: Error reading request body
           
           
+  /event-processing/event-participant/add:
+
+    post:
+      tags: 
+      - "event-processing"
+
+      description: Add event
+
+
+      parameters:
+
+        - name: event-name
+          
+          in: header
+          
+          type: string
+          
+          required: true
+          
+          description: text of notification telegram message
+          
+
+      responses:
+
+        200:
+
+          description: Returns event participant that was added.
+
+          schema:
+
+            $ref: "#/definitions/User"
+
+        400:
+
+          description: Invalid characters in <fieldname> were provided.
+        
+        502:
+          
+          description: Couldn't get answer from telegram API
+        
+        500:
+        
+          description: Error reading request body          
+          
+
   /event-processing/event/update:
 
     patch:
@@ -334,19 +379,19 @@ paths:
 
         200:
 
-          description: Returns chat where message has been sent.
+          description: Returns updated event.
 
           schema:
 
-            type: integer
+            $ref: "#/definitions/Event" 
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
-          description: Couldn't get answer from telegram API
+          description: Couldn't get answer from event proccesing service
         
         500:
         
@@ -398,7 +443,7 @@ paths:
         
         502:
           
-          description: Couldn't get answer from database
+          description: Couldn't get answer from event proccesing service
         
         500:
         
@@ -411,59 +456,52 @@ paths:
       tags: 
       - "event-processing"
 
-      description: Get all events of user
+      description: Get all events of user in current week
 
 
       parameters:
 
-        - name: userName
-
+        - name: token
+          
           in: header
-
-          type: integer
-
-          required: true
-
-          description: id of user
-        
-        - name: notification text
           
-          in: body
-          
-          schema: 
-            
-            type: string
+          type: string
           
           required: true
           
-          description: text of notification telegram message
+          description: user's token
           
 
       responses:
 
         200:
 
-          description: Returns chat where message has been sent.
+          description: Returns array of events
 
           schema:
 
-            type: integer
+            type: "array"
+            
+            items: 
+            
+              $ref: "#/definitions/Event"
+              
+              
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
-          description: Couldn't get answer from telegram API
+          description: Couldn't get answer from event proccesing service
         
         500:
         
           description: Error reading request body
-          
       
 
-  /event-processing/user/workload/{userName}:
+  /event-processing/user/workload/{user-name}:
 
     get:
       tags: 
@@ -474,11 +512,11 @@ paths:
 
       parameters:
 
-        - name: userName
+        - name: user-name
 
           in: path
 
-          type: integer
+          type: string
 
           required: true
 
@@ -488,12 +526,21 @@ paths:
           
           in: header
           
-          
-          type: integer
+          type: string
           
           required: true
           
           description: date of users load
+          
+        - name: token
+          
+          in: header
+          
+          type: string
+          
+          required: true
+          
+          description: user token for login
     
 
       responses:
@@ -502,21 +549,21 @@ paths:
 
           description: Returns intervals of occupied time.
 
-          schema:
-
-            type: integer
+          schema: 
+            
+            $ref: "#/definitions/UserWorkload" 
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
-          description: Couldn't get answer from telegram API
+          description: Couldn't get answer from database
         
         500:
         
-          description: Error reading request body        
+          description: Error reading request headers        
 
 
 #------------------------------------------------------------------------------------------
@@ -569,7 +616,6 @@ paths:
           description: Error reading request body        
 
 
-
   /user/authentication-token:
 
     get:
@@ -607,11 +653,11 @@ paths:
 
         400:
 
-          description: Invalid characters in "chatID" were provided.
+          description: Invalid characters in <fieldname> were provided.
         
         502:
           
-          description: Couldn't get answer from telegram API
+          description: Couldn't get answer from authentication service
         
         500:
         
@@ -696,4 +742,3 @@ definitions:
         endTime:
           type: "string"
           format: "time"
-        
