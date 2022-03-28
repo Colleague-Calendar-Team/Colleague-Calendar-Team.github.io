@@ -1,744 +1,512 @@
 swagger: "2.0"
 info:
-
   version: "1.0"
-
-  title: "Calendar API"
-
+  title: Calendar API
 tags:
-- name: "notification-service"
-  description: "send notifications"
+- name: notification-service
+  description: send notifications
   externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-
-- name: "event-processing"
-  description: "work with calendar user's events data"
-  
-- name: "user"
-  description: "work with user data"
-
-
+    description: Find out more
+    url: http://swagger.io
+- name: event-processing
+  description: work with calendar user's events data
+- name: user
+  description: work with user data
 paths:
-
-
   /notification-service/telegram/send:
-
     get:
-      tags: 
-      - "notification-service"
-     
+      tags:
+      - notification-service
       description: Sends event notification to telegram chat
-
       parameters:
-      
-        - name: api-key
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: key to use handle
-
-        - name: chatID
-
-          in: header
-
-          type: string
-
-          required: true
-
-          description: id of telegram chat where to send message.
-        
-        - name: event data
-          
-          in: body
-          
-          schema: 
-            
-            $ref: "#/definitions/Event" 
-          
-          required: true
-          
-          description: data to form notification text
-          
-
+      - name: api-key
+        in: header
+        description: key to use handle
+        required: true
+        type: string
+      - name: chatID
+        in: header
+        description: id of telegram chat where to send message.
+        required: true
+        type: string
+      - in: body
+        name: event data
+        description: data to form notification text
+        required: true
+        schema:
+          $ref: '#/definitions/Event'
       responses:
-
-        200:
-
+        "200":
           description: notification sent successfully
-
-        400:
-
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from telegram API
-        
-        500:
-        
+        "500":
           description: Error reading request body
- 
-          
   /notification-service/telegram/confirm:
-
     get:
-      tags: 
-      - "notification-service"
-
+      tags:
+      - notification-service
       description: Returns a greeting to the user!
-      
-
       parameters:
-
-        - name: chatID
-
-          in: header
-
+      - name: chatID
+        in: header
+        description: id of telegram chat where to send message.
+        required: true
+        type: string
+      - in: body
+        name: notification text
+        description: text of notification telegram message
+        required: true
+        schema:
           type: string
-
-          required: true
-
-          description: id of telegram chat where to send message.
-        
-        - name: notification text
-          
-          in: body
-          
-          schema: 
-            
-            type: string
-          
-          required: true
-          
-          description: text of notification telegram message
-          
-
-      responses:
-
-        200:
-
-          description: Returns chat where message has been sent.
-
-          schema:
-
-            type: integer
-            
       deprecated: true
-
-
+      responses:
+        "200":
+          description: Returns chat where message has been sent.
+          schema:
+            type: integer
   /notification-service/email/send:
-
     get:
-      tags: 
-      - "notification-service"
-     
+      tags:
+      - notification-service
       description: Sends event notification to email address
-
       parameters:
-      
-        - name: api-key
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: key to use handle
-
-        - name: email
-
-          in: header
-
-          type: string
-
-          required: true
-
-          description: email adress where to send message.
-        
-        - name: event data
-          
-          in: body
-          
-          schema: 
-            
-            $ref: "#/definitions/Event" 
-          
-          required: true
-          
-          description: data to form notification text
-      
-      
+      - name: api-key
+        in: header
+        description: key to use handle
+        required: true
+        type: string
+      - name: email
+        in: header
+        description: email adress where to send message.
+        required: true
+        type: string
+      - in: body
+        name: event data
+        description: data to form notification text
+        required: true
+        schema:
+          $ref: '#/definitions/Event'
       responses:
-
-        200:
-
+        "200":
           description: notification sent successfully
-          
-        400:
-
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from email service
-        
-        500:
-        
+        "500":
           description: Error reading request body
-
-
   /notification-service/sms/send:
-
     get:
-      tags: 
-      - "notification-service"
-     
+      tags:
+      - notification-service
       description: Sends event notification to sms
-
       parameters:
-      
-        - name: api-key
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: key to use handle
-
-        - name: phone-number
-
-          in: header
-
-          type: string
-
-          required: true
-
-          description: phone number where to send sms message
-        
-        - name: event data
-          
-          in: body
-          
-          schema: 
-            
-            $ref: "#/definitions/Event" 
-          
-          required: true
-          
-          description: data to form notification text
-          
-
+      - name: api-key
+        in: header
+        description: key to use handle
+        required: true
+        type: string
+      - name: phone-number
+        in: header
+        description: phone number where to send sms message
+        required: true
+        type: string
+      - in: body
+        name: event data
+        description: data to form notification text
+        required: true
+        schema:
+          $ref: '#/definitions/Event'
       responses:
-
-        200:
-
+        "200":
           description: notification sent successfully
-
-        400:
-
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from sms service api
-        
-        500:
-        
+        "500":
           description: Error reading request body
-
-# ---------------------------------------------------------------------------------------
-# ----------------------------------EVENT------------------------------------------------
-# ---------------------------------------------------------------------------------------
-
-  
   /event-processing/event/add:
-
     post:
-      tags: 
-      - "event-processing"
-
+      tags:
+      - event-processing
       description: Add event
-
-
       parameters:
-
-        - name: event data
-          
-          in: body
-          
-          schema: 
-            
-            $ref: "#/definitions/Event" 
-          
-          required: true
-          
-          description:  event data for creation
-          
-
+      - in: body
+        name: event data
+        description: event data for creation
+        required: true
+        schema:
+          $ref: '#/definitions/Event'
       responses:
-
-        200:
-
+        "200":
           description: Returns chat where message has been sent.
-
           schema:
-
             type: integer
-
-        400:
-
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from telegram API
-        
-        500:
-        
+        "500":
           description: Error reading request body
-          
-          
   /event-processing/event-participant/add:
-
     post:
-      tags: 
-      - "event-processing"
-
+      tags:
+      - event-processing
       description: Add event
-
-
       parameters:
-
-        - name: event-name
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: text of notification telegram message
-          
-
+      - name: event-name
+        in: header
+        description: text of notification telegram message
+        required: true
+        type: string
       responses:
-
-        200:
-
+        "200":
           description: Returns event participant that was added.
-
           schema:
-
-            $ref: "#/definitions/User"
-
-        400:
-
+            $ref: '#/definitions/User'
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from telegram API
-        
-        500:
-        
-          description: Error reading request body          
-          
-
+        "500":
+          description: Error reading request body
   /event-processing/event/update:
-
     patch:
-      tags: 
-      - "event-processing"
-
+      tags:
+      - event-processing
       description: Update event information
-
-
       parameters:
-
-        - name: event data
-          
-          in: body
-          
-          schema: 
-            
-            $ref: "#/definitions/Event" 
-          
-          required: true
-          
-          description:  event data for update
-          
-
+      - in: body
+        name: event data
+        description: event data for update
+        required: true
+        schema:
+          $ref: '#/definitions/Event'
       responses:
-
-        200:
-
+        "200":
           description: Returns updated event.
-
           schema:
-
-            $ref: "#/definitions/Event" 
-
-        400:
-
+            $ref: '#/definitions/Event'
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from event proccesing service
-        
-        500:
-        
+        "500":
           description: Error reading request body
-
-  
   /event-processing/event/delete:
-
     delete:
-      tags: 
-      - "event-processing"
-
+      tags:
+      - event-processing
       description: Delete event
-
-
       parameters:
-
-        - name: event_title
-
-          in: header
-
-          type: integer
-
-          required: true
-
-          description: id of telegram chat where to send message.
-        
-        - name: token
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: user's token
-          
-
+      - name: event_title
+        in: header
+        description: id of telegram chat where to send message.
+        required: true
+        type: integer
+      - name: token
+        in: header
+        description: user's token
+        required: true
+        type: string
       responses:
-
-        200:
-
+        "200":
           description: Returns chat where message has been sent.
-
-
-        400:
-
+        "400":
           description: Invalid token
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from event proccesing service
-        
-        500:
-        
+        "500":
           description: Error reading request headers
-          
-
   /event-processing/event/all:
-
     get:
-      tags: 
-      - "event-processing"
-
+      tags:
+      - event-processing
       description: Get all events of user in current week
-
-
       parameters:
-
-        - name: token
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: user's token
-          
-
+      - name: token
+        in: header
+        description: user's token
+        required: true
+        type: string
       responses:
-
-        200:
-
+        "200":
           description: Returns array of events
-
           schema:
-
-            type: "array"
-            
-            items: 
-            
-              $ref: "#/definitions/Event"
-              
-              
-
-        400:
-
+            type: array
+            items:
+              $ref: '#/definitions/Event'
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from event proccesing service
-        
-        500:
-        
+        "500":
           description: Error reading request body
-      
-
   /event-processing/user/workload/{user-name}:
-
     get:
-      tags: 
-      - "event-processing"
-
+      tags:
+      - event-processing
       description: Get interval of free and occupied user time
-
-
       parameters:
-
-        - name: user-name
-
-          in: path
-
-          type: string
-
-          required: true
-
-          description: id of user
-        
-        - name: date
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: date of users load
-          
-        - name: token
-          
-          in: header
-          
-          type: string
-          
-          required: true
-          
-          description: user token for login
-    
-
+      - name: user-name
+        in: path
+        description: id of user
+        required: true
+        type: string
+      - name: date
+        in: header
+        description: date of users load
+        required: true
+        type: string
+      - name: token
+        in: header
+        description: user token for login
+        required: true
+        type: string
       responses:
-
-        200:
-
+        "200":
           description: Returns intervals of occupied time.
-
-          schema: 
-            
-            $ref: "#/definitions/UserWorkload" 
-
-        400:
-
+          schema:
+            $ref: '#/definitions/UserWorkload'
+        "400":
           description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from database
-        
-        500:
-        
-          description: Error reading request headers        
-
-
-#------------------------------------------------------------------------------------------
-#------------------------------USER DATA---------------------------------------------------
-#------------------------------------------------------------------------------------------
-
-
+        "500":
+          description: Error reading request headers
   /user/register:
-
     put:
-      tags: 
-      - "user"
-
+      tags:
+      - user
       description: Register new user
-
-
       parameters:
-
-        
-        - name: user data
-          
-          in: body
-          
-          schema:
-            $ref: "#/definitions/User" 
-              
-          
-          required: true
-          
-          description: text of notification telegram message
-          
-
+      - in: body
+        name: user data
+        description: text of notification telegram message
+        required: true
+        schema:
+          $ref: '#/definitions/User'
       responses:
-
-        200:
-
+        "200":
           description: User registered
-
-
-        400:
-
+        "400":
           description: Invalid user data provided for registration
-        
-        502:
-          
+        "502":
           description: Couldn't get answer from database
-        
-        500:
-        
-          description: Error reading request body        
-
-
-  /user/authentication-token:
-
-    get:
-      tags: 
-      - "user"
-
-      description: User login
-
-
-      parameters:
-
-        
-        - name: notification text
-          
-          in: body
-          
-          schema: 
-            
-            type: string
-          
-          required: true
-          
-          description: text of notification telegram message
-          
-
-      responses:
-
-        200:
-
-          description: Returns chat where message has been sent.
-
-          schema:
-
-            type: integer
-
-        400:
-
-          description: Invalid characters in <fieldname> were provided.
-        
-        502:
-          
-          description: Couldn't get answer from authentication service
-        
-        500:
-        
+        "500":
           description: Error reading request body
-          
-          
-#--------------------------------------------------------------------------
-# ------------------Models-------------------------------------------------
-#--------------------------------------------------------------------------
-
+  /user/authentication-token:
+    get:
+      tags:
+      - user
+      description: User login
+      parameters:
+      - in: body
+        name: notification text
+        description: text of notification telegram message
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns chat where message has been sent.
+          schema:
+            type: integer
+        "400":
+          description: Invalid characters in <fieldname> were provided.
+        "502":
+          description: Couldn't get answer from authentication service
+        "500":
+          description: Error reading request body
+  /user:
+    get:
+      tags:
+      - user
+      description: Returns information on the current authorized user
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Return information of current user
+          schema:
+            $ref: '#/definitions/User'
+        "502":
+          description: Couldn't get answer from database
+  /user/update/profile:
+    post:
+      tags:
+      - user
+      description: Update general information about current user
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user-info
+        required: true
+        schema:
+          $ref: '#/definitions/userinfo'
+      responses:
+        "200":
+          description: Successful update
+        "502":
+          description: Couldn't get answer from database
+        "400":
+          description: Invalid user data
+        "500":
+          description: Error reading request body
+  /user/update/avatar:
+    post:
+      tags:
+      - user
+      description: Update avatar of current user
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: avatarUrl
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful update
+        "502":
+          description: Couldn't get answer from database
+        "400":
+          description: Invalid url
+        "500":
+          description: Error reading request parameters
+  /user/update/password:
+    post:
+      tags:
+      - user
+      description: Change password of current user
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: password-info
+        required: true
+        schema:
+          $ref: '#/definitions/passwordinfo'
+      responses:
+        "200":
+          description: Successful update
+        "502":
+          description: Couldn't get answer from database
+        "400":
+          description: Paaword entered incorrectly
+        "401":
+          description: User unathorized
+        "500":
+          description: Error reading request body
+  /user/logout:
+    post:
+      tags:
+      - user
+      description: User Logout and delete current token
+      parameters: []
+      responses:
+        "200":
+          description: Successful logout
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from authentication service
 definitions:
-
   User:
-    type: "object"
+    type: object
     properties:
       password:
-        type: "string"
+        type: string
       email:
-        type: "string"
+        type: string
       phoneNumber:
-        type: "string"
+        type: string
       telegramID:
-        type: "string"
+        type: string
       name:
-        type: "string"
+        type: string
       surname:
-        type: "string"
- 
-
+        type: string
   Event:
-    type: "object"
+    type: object
     properties:
       beginTime:
-        type: "string"
-        format: "datetime"
+        type: string
+        format: datetime
       endTime:
-        type: "string"
-        format: "datetime" 
+        type: string
+        format: datetime
       description:
-        type: "string"
-        format: "TEXT"
+        type: string
+        format: TEXT
       meetingLink:
-        type: "string"
-        format: "link"
+        type: string
+        format: link
       isRepeating:
-        type: "boolean"
+        type: boolean
       title:
-        type: "string"
-        
-        
+        type: string
   EventParticipant:
-    type: "object"
+    type: object
     properties:
       eventParticipantID:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       eventID:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       userID:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       isGoing:
-        type: "boolean"
+        type: boolean
       notificationTime:
-        type: "string"
+        type: string
       notificationInTelegram:
-        type: "boolean"
+        type: boolean
       notificationInEmail:
-        type: "boolean"
+        type: boolean
       notificationInSMS:
-        type: "boolean"
-
+        type: boolean
   UserWorkload:
-    type: "array"
+    type: array
     items:
-      type: "object"
-      properties:
-        beginTime:
-          type: "string"
-          format: "time"
-        endTime:
-          type: "string"
-          format: "time"
+      $ref: '#/definitions/UserWorkload_inner'
+  userinfo:
+    type: object
+    properties:
+      email:
+        type: string
+      phoneNumber:
+        type: string
+      telegramID:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+  passwordinfo:
+    type: object
+    properties:
+      oldPassword:
+        type: string
+      newPassword:
+        type: string
+      newPasswordRepeat:
+        type: string
+  UserWorkload_inner:
+    type: object
+    properties:
+      beginTime:
+        type: string
+        format: time
+      endTime:
+        type: string
+        format: time
