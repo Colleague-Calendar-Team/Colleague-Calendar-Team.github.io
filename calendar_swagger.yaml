@@ -10,6 +10,8 @@ tags:
     url: http://swagger.io
 - name: event-processing
   description: work with calendar user's events data
+- name: auth
+  description: Authentication actions
 - name: user
   description: work with user data
 paths:
@@ -246,13 +248,140 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
-  /event-processing/user/workload/{user-name}:
+  /auth/register:
+    post:
+      tags:
+      - auth
+      description: Register new user
+      parameters:
+      - in: body
+        name: register data
+        description: user data for registration
+        required: true
+        schema:
+          $ref: '#/definitions/RegisterData'
+      responses:
+        "200":
+          description: User registered
+        "400":
+          description: Invalid user data provided for registration
+        "502":
+          description: Couldn't get answer from database
+        "500":
+          description: Error reading request body
+  /auth/login:
+    post:
+      tags:
+      - auth
+      description: Log user into the system
+      parameters:
+      - name: login
+        in: query
+        required: true
+        type: string
+      - name: password
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: successful login
+          schema:
+            type: string
+            description: return user token
+        "400":
+          description: Invalid username/password supplied
+        "500":
+          description: Error reading request query
+        "502":
+          description: Couldn't get answer from authentication service
+  /auth/logout:
+    post:
+      tags:
+      - auth
+      description: User Logout and delete current token
+      parameters: []
+      responses:
+        "200":
+          description: Successful logout
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from authentication service
+  /user/me:
     get:
       tags:
-      - event-processing
+      - user
+      summary: Info of current user
+      description: Returns information of the current authorized user
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Return information of current user
+          schema:
+            $ref: '#/definitions/User'
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from database
+  /user/{username}/profiles:
+    get:
+      tags:
+      - user
+      summary: profile info of users matching the username
+      description: Get information of user by search
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: path
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Return information of current user
+          schema:
+            $ref: '#/definitions/UserProfile'
+        "502":
+          description: Couldn't get answer from database
+        "400":
+          description: Invalid user name
+        "500":
+          description: Error reading request path
+  /user/{username}/avatar:
+    get:
+      tags:
+      - user
+      summary: user avatar
+      description: Get avatar of user by search
+      produces:
+      - multipart/form-data
+      parameters:
+      - name: username
+        in: path
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Return avatar of user
+          schema:
+            type: file
+        "400":
+          description: Invalid user name
+        "500":
+          description: Error reading request path
+        "502":
+          description: Couldn't get answer from database
+  /user/{username}/workload:
+    get:
+      tags:
+      - user
+      summary: user workload
       description: Get interval of free and occupied user time
       parameters:
-      - name: user-name
+      - name: username
         in: path
         description: id of user
         required: true
@@ -278,25 +407,81 @@ paths:
           description: Couldn't get answer from database
         "500":
           description: Error reading request headers
-  /user/register:
-    put:
+  /user/update/profile:
+    patch:
       tags:
       - user
-      description: Register new user
+      summary: update current user profile
+      description: Update general information about current user
+      produces:
+      - application/json
       parameters:
       - in: body
-        name: user data
-        description: text of notification telegram message
+        name: user-info
         required: true
         schema:
-          $ref: '#/definitions/User'
+          $ref: '#/definitions/userinfo'
       responses:
         "200":
-          description: User registered
-        "400":
-          description: Invalid user data provided for registration
+          description: Successful update
         "502":
           description: Couldn't get answer from database
+        "400":
+          description: Invalid user data
+        "401":
+          description: User not authorized
+        "500":
+          description: Error reading request body
+  /user/update/avatar:
+    patch:
+      tags:
+      - user
+      summary: update current user avatar
+      description: Update avatar of current user
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: file
+        in: formData
+        description: file to upload
+        required: false
+        type: file
+      responses:
+        "200":
+          description: Successful update
+        "400":
+          description: Invalid url
+        "401":
+          description: User not authorized
+        "500":
+          description: Error reading request parameters
+        "502":
+          description: Couldn't get answer from database
+  /user/update/password:
+    patch:
+      tags:
+      - user
+      summary: update current user password
+      description: Change password of current user
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: password-info
+        required: true
+        schema:
+          $ref: '#/definitions/passwordinfo'
+      responses:
+        "200":
+          description: Successful update
+        "502":
+          description: Couldn't get answer from database
+        "400":
+          description: Paaword entered incorrectly
+        "401":
+          description: User unathorized
         "500":
           description: Error reading request body
   /user/authentication-token:
@@ -322,102 +507,6 @@ paths:
           description: Couldn't get answer from authentication service
         "500":
           description: Error reading request body
-  /user:
-    get:
-      tags:
-      - user
-      description: Returns information on the current authorized user
-      produces:
-      - application/json
-      parameters: []
-      responses:
-        "200":
-          description: Return information of current user
-          schema:
-            $ref: '#/definitions/User'
-        "502":
-          description: Couldn't get answer from database
-  /user/update/profile:
-    post:
-      tags:
-      - user
-      description: Update general information about current user
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: user-info
-        required: true
-        schema:
-          $ref: '#/definitions/userinfo'
-      responses:
-        "200":
-          description: Successful update
-        "502":
-          description: Couldn't get answer from database
-        "400":
-          description: Invalid user data
-        "500":
-          description: Error reading request body
-  /user/update/avatar:
-    post:
-      tags:
-      - user
-      description: Update avatar of current user
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: avatarUrl
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Successful update
-        "502":
-          description: Couldn't get answer from database
-        "400":
-          description: Invalid url
-        "500":
-          description: Error reading request parameters
-  /user/update/password:
-    post:
-      tags:
-      - user
-      description: Change password of current user
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: password-info
-        required: true
-        schema:
-          $ref: '#/definitions/passwordinfo'
-      responses:
-        "200":
-          description: Successful update
-        "502":
-          description: Couldn't get answer from database
-        "400":
-          description: Paaword entered incorrectly
-        "401":
-          description: User unathorized
-        "500":
-          description: Error reading request body
-  /user/logout:
-    post:
-      tags:
-      - user
-      description: User Logout and delete current token
-      parameters: []
-      responses:
-        "200":
-          description: Successful logout
-        "401":
-          description: User unathorized
-        "502":
-          description: Couldn't get answer from authentication service
 definitions:
   User:
     type: object
@@ -479,6 +568,36 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/UserWorkload_inner'
+  RegisterData:
+    type: object
+    properties:
+      password:
+        type: string
+      passwordRepeat:
+        type: string
+      email:
+        type: string
+      phoneNumber:
+        type: string
+      telegramID:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+  UserProfile:
+    type: object
+    properties:
+      email:
+        type: string
+      phoneNumber:
+        type: string
+      telegramID:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
   userinfo:
     type: object
     properties:
