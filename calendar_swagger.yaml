@@ -46,29 +46,6 @@ paths:
           description: Couldn't get answer from telegram API
         "500":
           description: Error reading request body
-  /notification-service/telegram/confirm:
-    get:
-      tags:
-      - notification-service
-      description: Returns a greeting to the user!
-      parameters:
-      - name: chatID
-        in: header
-        description: id of telegram chat where to send message.
-        required: true
-        type: string
-      - in: body
-        name: notification text
-        description: text of notification telegram message
-        required: true
-        schema:
-          type: string
-      deprecated: true
-      responses:
-        "200":
-          description: Returns chat where message has been sent.
-          schema:
-            type: integer
   /notification-service/email/send:
     get:
       tags:
@@ -157,29 +134,6 @@ paths:
           description: Invalid characters in <fieldname> were provided.
         "401":
           description: User unathorized
-        "502":
-          description: Couldn't get answer from telegram API
-        "500":
-          description: Error reading request body
-  /event-processing/event-participant/add:
-    post:
-      tags:
-      - event-processing
-      description: Add event
-      parameters:
-      - name: event-name
-        in: header
-        description: text of notification telegram message
-        required: true
-        type: string
-      deprecated: true
-      responses:
-        "200":
-          description: Returns event participant that was added.
-          schema:
-            $ref: '#/definitions/User'
-        "400":
-          description: Invalid characters in <fieldname> were provided.
         "502":
           description: Couldn't get answer from telegram API
         "500":
@@ -622,30 +576,6 @@ paths:
           description: Paaword entered incorrectly
         "401":
           description: User unathorized
-        "500":
-          description: Error reading request body
-  /user/authentication-token:
-    get:
-      tags:
-      - user
-      description: User login
-      parameters:
-      - in: body
-        name: notification text
-        description: text of notification telegram message
-        required: true
-        schema:
-          type: string
-      deprecated: true
-      responses:
-        "200":
-          description: Returns chat where message has been sent.
-          schema:
-            type: integer
-        "400":
-          description: Invalid characters in <fieldname> were provided.
-        "502":
-          description: Couldn't get answer from authentication service
         "500":
           description: Error reading request body
 definitions:
