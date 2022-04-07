@@ -237,6 +237,37 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
+
+  /events/{eventID}/participiants:
+    get:
+      tags:
+      - event-processing
+      description: Return list of event participiants
+      parameters:
+      - name: eventID
+        in: path
+        required: true
+        type: integer
+      - name: token
+        in: header
+        description: user's token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success, return list of participiants
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserProfile'
+        "400":
+          description: Invalid token
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from event proccesing service
+        "500":
+          description: Error reading request headers or path
   /events/{eventID}/delete:
     delete:
       tags:
@@ -287,7 +318,7 @@ paths:
             items:
               type: array
               items:
-                $ref: '#/definitions/Event'
+                $ref: '#/definitions/EventGet'
         "400":
           description: Invalid characters in <fieldname> were provided.
         "502":
@@ -669,12 +700,6 @@ definitions:
     properties:
       userID:
         type: integer
-      email:
-        type: string
-      phoneNumber:
-        type: string
-      telegramID:
-        type: string
       name:
         type: string
       surname:
@@ -729,6 +754,37 @@ definitions:
         type: boolean
       title:
         type: string
+  EventGet:
+    type: object
+    properties:
+      eventID:
+        type: integer
+      beginTime:
+        type: string
+        format: datetime
+      endTime:
+        type: string
+        format: datetime
+      description:
+        type: string
+        format: TEXT
+      meetingLink:
+        type: string
+        format: link
+      isRepeating:
+        type: boolean
+      title:
+        type: string
+      owner:
+        type: string
+      notificationTime:
+        type: string
+      notificationInTelegram:
+        type: boolean
+      notificationInEmail:
+        type: boolean
+      notificationInSMS:
+        type: boolean
   Notifications:
     type: object
     properties:
@@ -770,4 +826,4 @@ definitions:
         format: time
       endTime:
         type: string
-        format: time
+        format: timeg
