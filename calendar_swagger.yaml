@@ -237,7 +237,6 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
-
   /events/{eventID}/participiants:
     get:
       tags:
@@ -305,9 +304,9 @@ paths:
         description: user's token
         required: true
         type: string
-      - name: date
+      - name: x-date
         in: header
-        description: selected date on calendar
+        description: firstDate for render weeks
         required: false
         type: string
       responses:
@@ -380,7 +379,12 @@ paths:
       - auth
       summary: Logout
       description: User Logout and delete current token
-      parameters: []
+      parameters:
+      - name: token
+        in: header
+        description: user token
+        required: true
+        type: string
       responses:
         "200":
           description: Successful logout
@@ -388,6 +392,25 @@ paths:
           description: User unathorized
         "502":
           description: Couldn't get answer from authentication service
+  /user/token:
+    get:
+      tags:
+      - user
+      summary: token of current user
+      description: Returns token of authenticated current user
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Return token
+          schema:
+            type: string
+            description: return user token
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from database
   /user/account:
     get:
       tags:
@@ -496,7 +519,7 @@ paths:
         description: id of user
         required: true
         type: string
-      - name: date
+      - name: x-date
         in: header
         description: date of users load
         required: true
