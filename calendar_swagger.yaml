@@ -170,11 +170,11 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
-  /events/{eventID}/update/participiants:
+  /events/{eventID}/update/participants:
     patch:
       tags:
       - event-processing
-      description: Update list of event participiants
+      description: Update list of event participants
       parameters:
       - name: token
         in: header
@@ -186,8 +186,8 @@ paths:
         required: true
         type: integer
       - in: body
-        name: participiants
-        description: list of participiants
+        name: participants
+        description: list of participants
         required: true
         schema:
           type: array
@@ -195,9 +195,9 @@ paths:
             type: integer
       responses:
         "200":
-          description: success add of participiants
+          description: success add of participants
         "400":
-          description: Invalid list of participiants
+          description: Invalid list of participants
         "401":
           description: User unathorized
         "502":
@@ -237,6 +237,36 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
+  /events/{eventID}/participants:
+    get:
+      tags:
+      - event-processing
+      description: Return list of event participants
+      parameters:
+      - name: eventID
+        in: path
+        required: true
+        type: integer
+      - name: token
+        in: header
+        description: user's token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success, return list of participants
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserProfile'
+        "400":
+          description: Invalid token
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from event proccesing service
+        "500":
+          description: Error reading request headers or path
   /events/{eventID}/delete:
     delete:
       tags:
@@ -274,9 +304,9 @@ paths:
         description: user's token
         required: true
         type: string
-      - name: date
+      - name: x-date
         in: header
-        description: selected date on calendar
+        description: firstDate for render weeks
         required: false
         type: string
       responses:
@@ -287,7 +317,7 @@ paths:
             items:
               type: array
               items:
-                $ref: '#/definitions/Event'
+                $ref: '#/definitions/EventGet'
         "400":
           description: Invalid characters in <fieldname> were provided.
         "502":
@@ -349,7 +379,12 @@ paths:
       - auth
       summary: Logout
       description: User Logout and delete current token
-      parameters: []
+      parameters:
+      - name: token
+        in: header
+        description: user token
+        required: true
+        type: string
       responses:
         "200":
           description: Successful logout
@@ -357,6 +392,25 @@ paths:
           description: User unathorized
         "502":
           description: Couldn't get answer from authentication service
+  /user/token:
+    get:
+      tags:
+      - user
+      summary: token of current user
+      description: Returns token of authenticated current user
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Return token
+          schema:
+            type: string
+            description: return user token
+        "401":
+          description: User unathorized
+        "502":
+          description: Couldn't get answer from database
   /user/account:
     get:
       tags:
@@ -465,7 +519,7 @@ paths:
         description: id of user
         required: true
         type: string
-      - name: date
+      - name: x-date
         in: header
         description: date of users load
         required: true
@@ -636,7 +690,8 @@ definitions:
       isOwner:
         type: boolean
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
@@ -669,12 +724,6 @@ definitions:
     properties:
       userID:
         type: integer
-      email:
-        type: string
-      phoneNumber:
-        type: string
-      telegramID:
-        type: string
       name:
         type: string
       surname:
@@ -698,12 +747,13 @@ definitions:
         type: boolean
       title:
         type: string
-      participiants:
+      participants:
         type: array
         items:
           type: integer
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
@@ -729,11 +779,44 @@ definitions:
         type: boolean
       title:
         type: string
+  EventGet:
+    type: object
+    properties:
+      eventID:
+        type: integer
+      beginTime:
+        type: string
+        format: datetime
+      endTime:
+        type: string
+        format: datetime
+      description:
+        type: string
+        format: TEXT
+      meetingLink:
+        type: string
+        format: link
+      isRepeating:
+        type: boolean
+      title:
+        type: string
+      owner:
+        type: string
+      notificationTime:
+        type: integer
+        format: int64
+      notificationInTelegram:
+        type: boolean
+      notificationInEmail:
+        type: boolean
+      notificationInSMS:
+        type: boolean
   Notifications:
     type: object
     properties:
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
