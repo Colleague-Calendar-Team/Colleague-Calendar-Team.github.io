@@ -170,11 +170,11 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
-  /events/{eventID}/update/participiants:
+  /events/{eventID}/update/participants:
     patch:
       tags:
       - event-processing
-      description: Update list of event participiants
+      description: Update list of event participants
       parameters:
       - name: token
         in: header
@@ -186,8 +186,8 @@ paths:
         required: true
         type: integer
       - in: body
-        name: participiants
-        description: list of participiants
+        name: participants
+        description: list of participants
         required: true
         schema:
           type: array
@@ -195,9 +195,9 @@ paths:
             type: integer
       responses:
         "200":
-          description: success add of participiants
+          description: success add of participants
         "400":
-          description: Invalid list of participiants
+          description: Invalid list of participants
         "401":
           description: User unathorized
         "502":
@@ -237,11 +237,11 @@ paths:
           description: Couldn't get answer from event proccesing service
         "500":
           description: Error reading request body
-  /events/{eventID}/participiants:
+  /events/{eventID}/participants:
     get:
       tags:
       - event-processing
-      description: Return list of event participiants
+      description: Return list of event participants
       parameters:
       - name: eventID
         in: path
@@ -254,7 +254,7 @@ paths:
         type: string
       responses:
         "200":
-          description: Success, return list of participiants
+          description: Success, return list of participants
           schema:
             type: array
             items:
@@ -690,7 +690,8 @@ definitions:
       isOwner:
         type: boolean
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
@@ -746,12 +747,13 @@ definitions:
         type: boolean
       title:
         type: string
-      participiants:
+      participants:
         type: array
         items:
           type: integer
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
@@ -801,7 +803,8 @@ definitions:
       owner:
         type: string
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
@@ -812,7 +815,8 @@ definitions:
     type: object
     properties:
       notificationTime:
-        type: string
+        type: integer
+        format: int64
       notificationInTelegram:
         type: boolean
       notificationInEmail:
@@ -849,4 +853,4 @@ definitions:
         format: time
       endTime:
         type: string
-        format: timeg
+        format: time
